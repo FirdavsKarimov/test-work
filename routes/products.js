@@ -40,7 +40,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
 router.delete('/:id', authMiddleware, async (req, res) => {
     try {
         await Product.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Mahsulot o\'chirildi' });
+        res.json({ message: 'Product deleted' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
