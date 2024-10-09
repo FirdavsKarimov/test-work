@@ -46,20 +46,30 @@ router.post('/user', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.body.email });
+        const { email, password } = req.body;
+        console.log('Login attempt:', { email, password });
+
+        const user = await User.findOne({ email });
+        console.log('User found:', user);
+
         if (!user) {
+            console.log('User not found');
             return res.status(400).json({ message: 'User not found' });
         }
 
-        const validPassword = await bcrypt.compare(req.body.password, user.password);
-        if (!validPassword) {
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        console.log('Password valid:', isPasswordValid);
+
+        if (!isPasswordValid) {
+            console.log('Invalid password');
             return res.status(400).json({ message: 'Invalid password or email' });
         }
 
         const token = jwt.sign({ _id: user._id, role: user.role }, JWT_SECRET);
         res.json({ token });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
